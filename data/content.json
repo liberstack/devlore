@@ -11,6 +11,41 @@
     ]
   },
   {
+    "slug": "freelancer-produtos-digitais-js-python",
+    "title": "Freelancer e Produtos Digitais com JS e Python: Caminhos Práticos",
+    "file": "article-06.md",
+    "tags": [
+      "freelancer",
+      "produtos-digitais",
+      "javascript",
+      "python",
+      "carreira"
+    ]
+  },
+  {
+    "slug": "ebook-epub-markdown-vscode-pandoc",
+    "title": "Workflow de Ebook: de Markdown a EPUB com VSCode e Pandoc",
+    "file": "article-05.md",
+    "tags": [
+      "markdown",
+      "pandoc",
+      "vscode",
+      "epub",
+      "ebook"
+    ]
+  },
+  {
+    "slug": "programacao-web-js-python",
+    "title": "Programação Web na Prática: de JavaScript a Python",
+    "file": "article-04.md",
+    "tags": [
+      "javascript",
+      "python",
+      "web",
+      "skill-vault"
+    ]
+  },
+  {
     "slug": "javascript-origens",
     "title": "JavaScript: Origens e Evolução",
     "file": "article-02.md",

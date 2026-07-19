@@ -64,7 +64,7 @@ async function renderHome() {
     <main class="content">
       <h1>${CONFIG.brand.title}</h1>
       <p class="description">${CONFIG.brand.description}</p>
-      <input type="text" id="search-input" class="search-input" placeholder="🔍 Pesquisar" />
+      <input type="text" id="search-input" class="search-input" placeholder="🔍 Pesquisar palavras-chave web, javascript, python..." />
       <p class="list-note" id="list-note"></p>
       <ul class="article-list" id="article-list"></ul>
     </main>
