@@ -2,8 +2,7 @@ export const CONFIG = {
   brand: {
     title: "Wiki Archive",
     subtitle: "Arquivo digital de artigos técnicos",
-    description:
-      "Um arquivo estático de artigos e referências, organizado como uma wiki.",
+    description: "Um arquivo digital de artigos e referências.",
   },
 
   footer: {
