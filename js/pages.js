@@ -3,8 +3,6 @@
 
 import { CONFIG } from "./config.js";
 
-const RECENT_LIMIT = 5;
-
 // --- templates ---
 
 function renderNavbar() {
@@ -85,9 +83,10 @@ export function renderHome(root, list) {
       return;
     }
 
+    const total = items.length;
     listNoteEl.textContent = isSearch
-      ? ""
-      : `▼ ${Math.min(items.length, RECENT_LIMIT)} últimos artigos`;
+      ? `${total} ${total === 1 ? "resultado" : "resultados ▽"}`
+      : `${total} ${total === 1 ? "artigo" : "artigos ▽"}`;
 
     listEl.innerHTML = items.map(renderArticleListItem).join("");
   }
@@ -96,7 +95,7 @@ export function renderHome(root, list) {
     const q = query.trim().toLowerCase();
 
     if (!q) {
-      renderList(list.slice(0, RECENT_LIMIT), { isSearch: false });
+      renderList(list, { isSearch: false });
       return;
     }
 
@@ -110,7 +109,7 @@ export function renderHome(root, list) {
     renderList(filtered, { isSearch: true });
   }
 
-  renderList(list.slice(0, RECENT_LIMIT), { isSearch: false });
+  renderList(list, { isSearch: false });
 
   searchInput.addEventListener("input", () => filterByQuery(searchInput.value));
 }

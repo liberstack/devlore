@@ -6,7 +6,7 @@ Este README funciona como um tutorial: ao final, você sabe rodar o projeto, ent
 
 ## O que você vai encontrar
 
-- Home com campo de busca e lista dos 5 artigos mais recentes
+- Home com campo de busca e a lista completa de artigos
 - Busca por título e por tags, em tempo real
 - Página de artigo renderizada a partir de Markdown
 - Roteamento por hash (`#/` e `#/<slug>`)
@@ -102,7 +102,7 @@ Adicione uma entrada em `data/content.json`:
 - `file`: o nome do arquivo dentro de `content/`.
 - `tags`: usadas na busca e exibidas como etiquetas.
 
-A home mostra os 5 primeiros itens do JSON, então coloque os artigos mais novos no topo da lista.
+A home lista todos os artigos na ordem do JSON, então coloque os mais novos no topo.
 
 ### Passo 3: confira
 
