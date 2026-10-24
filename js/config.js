@@ -12,6 +12,6 @@ export const CONFIG = {
       email: "topverbs@gmail.com",
       whatsapp: "liberstack",
     },
-    links: [{ label: "GitHub", url: "https://github.com/liberstack" }],
+    links: [{ label: "Liberstack", url: "https://github.com/liberstack" }],
   },
 };

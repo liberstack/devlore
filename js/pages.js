@@ -33,7 +33,7 @@ function renderFooter() {
         <p><a href="https://t.me/${CONFIG.footer.contact.whatsapp}" target="_blank" rel="noopener">Telegram</a></p>
       </div>
       <div class="footer-col">
-        <h3>Links</h3>
+        <h3>GitHub</h3>
         <ul>${linksHtml}</ul>
       </div>
     </footer>
