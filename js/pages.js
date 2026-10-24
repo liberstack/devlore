@@ -87,7 +87,7 @@ export function renderHome(root, list) {
 
     listNoteEl.textContent = isSearch
       ? ""
-      : `▼ Os ${Math.min(items.length, RECENT_LIMIT)} últimos artigos`;
+      : `▼ ${Math.min(items.length, RECENT_LIMIT)} últimos artigos`;
 
     listEl.innerHTML = items.map(renderArticleListItem).join("");
   }

@@ -1,6 +1,6 @@
 export const CONFIG = {
   brand: {
-    title: "#devlore",
+    title: "#DevLore",
     subtitle: "História e fundamentos das tecnologias JavaScript e Python",
     description: "Um arquivo digital de artigos sobre JavaScript e Python",
   },
