@@ -1,58 +1,132 @@
-# Wiki Archive
+# #devlore
 
-Arquivo digital estático, no estilo de uma wiki simples. Construído apenas com HTML, CSS e JavaScript puro, sem framework e sem build step. A única dependência é o [marked.js](https://github.com/markedjs/marked), incluída localmente em `js/marked.min.js`.
+Um arquivo digital de artigos sobre JavaScript e Python, construído como uma SPA estática com HTML, CSS e JavaScript puro. Sem backend, sem banco de dados, sem build.
 
-## Estrutura
+Este README funciona como um tutorial: ao final, você sabe rodar o projeto, entender como ele é organizado e publicar um artigo novo.
+
+## O que você vai encontrar
+
+- Home com campo de busca e lista dos 5 artigos mais recentes
+- Busca por título e por tags, em tempo real
+- Página de artigo renderizada a partir de Markdown
+- Roteamento por hash (`#/` e `#/<slug>`)
+- Única dependência externa: [marked.js](https://marked.js.org/), para converter Markdown em HTML
+
+## 1. Estrutura do projeto
 
 ```
-content/            arquivos .md dos artigos
-data/content.json   lista dos artigos exibidos na home, na ordem definida
-js/config.js         título, descrição, sobre, contato e links
-js/router.js         hash router (home e #/slug)
-js/ui.js              navbar, footer, home, página de artigo e busca
-js/marked.min.js      lib de parsing de Markdown
-index.html
-style.css
+devlore/
+├── index.html
+├── style.css
+├── data/
+│   └── content.json
+├── content/
+│   ├── artigo-1.md
+│   └── artigo-2.md
+└── js/
+    ├── main.js
+    ├── router.js
+    ├── pages.js
+    ├── content.js
+    ├── config.js
+    └── marked.min.js
 ```
 
-## Como funciona
+- `data/content.json` guarda os metadados dos artigos (título, slug, tags, arquivo).
+- `content/` guarda o texto completo de cada artigo, em Markdown.
+- `js/` guarda os módulos da aplicação.
 
-- A home lista os artigos definidos em `data/content.json`, na ordem em que aparecem no array.
-- Cada artigo tem uma rota própria: `#/<slug>`. O router só reconhece essa rota e a home (`#/`); qualquer slug fora do `content.json` retorna uma página de 404 simples.
-- O conteúdo Markdown é buscado via `fetch` e convertido para HTML em tempo real com `marked.parse()`.
-- A home tem um campo de busca que filtra os artigos pelo `title`, sem depender de índice ou lib externa.
+## 2. Como rodar localmente
 
-## Adicionar um novo artigo
+O projeto usa `fetch()` para carregar o JSON e os arquivos Markdown, então **não funciona abrindo o `index.html` direto no navegador** (protocolo `file://`). É preciso servir os arquivos por HTTP.
 
-1. Criar o arquivo `.md` dentro de `content/`.
-2. Adicionar uma entrada em `data/content.json`:
+Com Python:
+
+```bash
+python -m http.server 8000
+```
+
+Depois, abra `http://localhost:8000` no navegador.
+
+## 3. Como o código está organizado
+
+Cada módulo tem uma responsabilidade única.
+
+| Arquivo      | Responsabilidade                                                       |
+| ------------ | ---------------------------------------------------------------------- |
+| `main.js`    | Ponto de entrada. Liga router, content e pages.                        |
+| `router.js`  | Lê o hash da URL e decide se é a home ou um artigo.                    |
+| `content.js` | Carrega `content.json` e os arquivos `.md`, com cache da lista.        |
+| `pages.js`   | Transforma dados em HTML: home, artigo e página 404.                   |
+| `config.js`  | Configurações do site: título, descrição, rodapé e links.              |
+
+### O fluxo de uma navegação
+
+1. O usuário acessa `#/meu-artigo`.
+2. `router.js` lê o hash e chama o handler `article("meu-artigo")`.
+3. `main.js` pede o artigo ao `content.js`.
+4. `content.js` encontra a entrada no JSON e busca o `.md` correspondente.
+5. `main.js` entrega o resultado ao `pages.js`, que converte o Markdown com `marked` e monta a página.
+
+Se o slug não existir, `content.js` devolve `null` e `pages.js` mostra a página 404.
+
+## 4. Como adicionar um artigo
+
+### Passo 1: crie o arquivo Markdown
+
+Crie um arquivo em `content/`, por exemplo `content/closures-em-javascript.md`:
+
+```markdown
+# Closures em JavaScript
+
+Texto do artigo aqui.
+```
+
+Use um `#` (h1) como primeira linha. As tags do artigo são inseridas logo depois dele.
+
+### Passo 2: registre no JSON
+
+Adicione uma entrada em `data/content.json`:
 
 ```json
 {
-  "slug": "meu-novo-artigo",
-  "title": "Meu Novo Artigo",
-  "file": "meu-novo-artigo.md"
+  "slug": "closures-em-javascript",
+  "title": "Closures em JavaScript",
+  "file": "closures-em-javascript.md",
+  "tags": ["javascript", "fundamentos"]
 }
 ```
 
-3. A ordem dos itens no array define a ordem de exibição na home.
+- `slug`: o que aparece na URL (`#/closures-em-javascript`).
+- `title`: o título exibido na lista.
+- `file`: o nome do arquivo dentro de `content/`.
+- `tags`: usadas na busca e exibidas como etiquetas.
 
-## Configuração
+A home mostra os 5 primeiros itens do JSON, então coloque os artigos mais novos no topo da lista.
 
-Edite `js/config.js` para alterar título, descrição, texto do "Sobre", contato e links do footer.
+### Passo 3: confira
 
-## Rodar localmente
+Recarregue a página. O artigo deve aparecer na home e abrir em `#/closures-em-javascript`.
 
-Como o projeto usa `fetch` para carregar `content.json` e os arquivos `.md`, é necessário servir os arquivos por HTTP (não funciona abrindo o `index.html` direto via `file://`).
+## 5. Como personalizar
 
-```bash
-npm run dev
-# ou, sem depender de npm:
-npm run serve
-```
+Edite `js/config.js` para trocar o título, a descrição, o texto do rodapé, o contato e os links. Os estilos ficam todos em `style.css`.
 
-Veja `deploy.md` para instruções de publicação.
+## 6. Como publicar no GitHub Pages
 
-## Privacidade e termos
+1. Envie o projeto para um repositório no GitHub.
+2. Vá em **Settings > Pages**.
+3. Em **Source**, escolha a branch principal e a pasta raiz (`/`).
+4. Salve. Em alguns minutos o site estará disponível no endereço indicado.
 
-Este projeto é totalmente estático e roda no navegador: não há backend, banco de dados ou coleta de dados do usuário. Nenhuma informação pessoal é armazenada, rastreada ou compartilhada com terceiros. O conteúdo é fornecido apenas para fins informativos, sem garantias de precisão ou atualização contínua.
+Como o projeto é 100% estático e usa roteamento por hash, não precisa de nenhuma configuração extra para as rotas funcionarem.
+
+## Decisões de projeto
+
+- **Sem framework e sem build:** o objetivo é mostrar domínio da plataforma web.
+- **Roteamento por hash:** funciona em qualquer hospedagem estática, sem regras de redirecionamento.
+- **Metadados separados do texto:** o JSON cuida do índice e da busca; o Markdown cuida do conteúdo. Adicionar um artigo nunca exige mexer em JavaScript.
+
+## Autor
+
+Guilherme Ribeiro. [GitHub](https://github.com/liberstack)

@@ -1,24 +1,11 @@
+// pages.js
+// Transforma dados em páginas HTML: home e artigo.
+
 import { CONFIG } from "./config.js";
-import { initRouter } from "./router.js";
 
-const app = document.getElementById("app");
+const RECENT_LIMIT = 5;
 
-let contentListCache = null;
-
-async function getContentList() {
-  if (contentListCache) return contentListCache;
-  const res = await fetch("data/content.json");
-  contentListCache = await res.json();
-  return contentListCache;
-}
-
-function renderTags(tags) {
-  if (!tags || !tags.length) return "";
-
-  const chips = tags.map((tag) => `<span class="tag">${tag}</span>`).join("");
-
-  return `<div class="tags">${chips}</div>`;
-}
+// --- templates ---
 
 function renderNavbar() {
   return `
@@ -55,16 +42,32 @@ function renderFooter() {
   `;
 }
 
-async function renderHome() {
-  const list = await getContentList();
-  const RECENT_LIMIT = 5;
+function renderTags(tags) {
+  if (!tags || !tags.length) return "";
+  const chips = tags.map((tag) => `<span class="tag">${tag}</span>`).join("");
+  return `<div class="tags">${chips}</div>`;
+}
 
-  app.innerHTML = `
+function renderArticleListItem(item) {
+  return `
+    <li>
+      <a href="#/${item.slug}">
+        <span class="item-title">${item.title}</span>
+        ${renderTags(item.tags)}
+      </a>
+    </li>
+  `;
+}
+
+// --- páginas ---
+
+export function renderHome(root, list) {
+  root.innerHTML = `
     ${renderNavbar()}
     <main class="content">
       <h1>${CONFIG.brand.title}</h1>
       <p class="description">${CONFIG.brand.description}</p>
-      <input type="text" id="search-input" class="search-input" placeholder="🔍 Pesquisar palavras-chave web, javascript, python..." />
+      <input type="text" id="search-input" class="search-input" placeholder="Pesquisar palavras-chave: web, javascript, python..." />
       <p class="list-note" id="list-note"></p>
       <ul class="article-list" id="article-list"></ul>
     </main>
@@ -86,61 +89,34 @@ async function renderHome() {
       ? ""
       : `▼ Os ${Math.min(items.length, RECENT_LIMIT)} últimos artigos`;
 
-    listEl.innerHTML = items
-      .map(
-        (item) => `
-          <li>
-            <a href="#/${item.slug}">
-              <span class="item-title">${item.title}</span>
-              ${renderTags(item.tags)}
-            </a>
-          </li>
-        `,
-      )
-      .join("");
+    listEl.innerHTML = items.map(renderArticleListItem).join("");
   }
 
-  renderList(list.slice(0, RECENT_LIMIT), { isSearch: false });
+  function filterByQuery(query) {
+    const q = query.trim().toLowerCase();
 
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-
-    if (!query) {
+    if (!q) {
       renderList(list.slice(0, RECENT_LIMIT), { isSearch: false });
       return;
     }
 
     const filtered = list.filter((item) => {
-      const titleMatch = item.title.toLowerCase().includes(query);
+      const titleMatch = item.title.toLowerCase().includes(q);
       const tagMatch = (item.tags || []).some((tag) =>
-        tag.toLowerCase().includes(query),
+        tag.toLowerCase().includes(q),
       );
       return titleMatch || tagMatch;
     });
     renderList(filtered, { isSearch: true });
-  });
-}
-
-async function renderArticle(slug) {
-  const list = await getContentList();
-  const entry = list.find((item) => item.slug === slug);
-
-  if (!entry) {
-    app.innerHTML = `
-      ${renderNavbar()}
-      <main class="content">
-        <a href="#/" class="back-link">&larr; Voltar</a>
-        <h1>404</h1>
-        <p>Artigo não encontrado.</p>
-      </main>
-      ${renderFooter()}
-    `;
-    return;
   }
 
-  const res = await fetch(`content/${entry.file}`);
-  const md = await res.text();
-  const html = marked.parse(md);
+  renderList(list.slice(0, RECENT_LIMIT), { isSearch: false });
+
+  searchInput.addEventListener("input", () => filterByQuery(searchInput.value));
+}
+
+export function renderArticle(root, { entry, markdown }) {
+  const html = marked.parse(markdown);
 
   // Insere o bloco de tags logo depois do primeiro </h1> do markdown renderizado,
   // para que apareçam como um "subtítulo" do artigo.
@@ -149,7 +125,7 @@ async function renderArticle(slug) {
     ? html.replace("</h1>", `</h1>${tagsBlock}`)
     : `${tagsBlock}${html}`;
 
-  app.innerHTML = `
+  root.innerHTML = `
     ${renderNavbar()}
     <main class="content article">
       <a href="#/" class="back-link">&larr; Voltar</a>
@@ -159,7 +135,14 @@ async function renderArticle(slug) {
   `;
 }
 
-initRouter({
-  home: renderHome,
-  article: renderArticle,
-});
+export function renderNotFound(root) {
+  root.innerHTML = `
+    ${renderNavbar()}
+    <main class="content">
+      <a href="#/" class="back-link">&larr; Voltar</a>
+      <h1>404</h1>
+      <p>Artigo não encontrado.</p>
+    </main>
+    ${renderFooter()}
+  `;
+}
