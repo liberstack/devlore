@@ -85,8 +85,8 @@ export function renderHome(root, list) {
 
     const total = items.length;
     listNoteEl.textContent = isSearch
-      ? `${total} ${total === 1 ? "resultado" : "resultados ▽"}`
-      : `${total} ${total === 1 ? "artigo" : "artigos ▽"}`;
+      ? `${total} ${total === 1 ? "resultado ▽" : "resultados ▽"}`
+      : `${total} ${total === 1 ? "artigo ▽" : "artigos ▽"}`;
 
     listEl.innerHTML = items.map(renderArticleListItem).join("");
   }
